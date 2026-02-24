@@ -1,0 +1,30 @@
+<div class="space-y-6">
+    <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Role</h3>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-[#0053e2] text-white">
+                    <th class="px-6 py-3 text-left font-semibold">Role</th>
+                    <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                    <th class="px-6 py-3 text-right font-semibold">Percentage</th>
+                    <th class="px-6 py-3 text-right font-semibold">Distribution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                    <td class="px-6 py-4 font-medium text-[#1f2937]">{{ role.name }}</td>
+                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(role.fte) }}</td>
+                    <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(role.percent) }}%</td>
+                    <td class="px-6 py-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: {{ role.percent }}%"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="text-sm text-[#6b7280] mt-4">Engineering dominates the allocation at 70.94%, indicating a strong technical focus across FinTech initiatives.</p>
+</div>

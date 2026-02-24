@@ -1,0 +1,31 @@
+<div class="space-y-6">
+    <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Product Area</h3>
+    <div class="space-y-4">
+        {% for area in product_areas %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h4 class="text-lg font-semibold text-[#1f2937]">{{ area.name }}</h4>
+                    <p class="text-sm text-[#6b7280]">{{ area.products | length }} products</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-[#0053e2]">{{ "%.2f" | format(area.fte) }}</p>
+                    <p class="text-sm text-[#6b7280]">{{ "%.2f" | format(area.percent) }}%</p>
+                </div>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                <div class="progress-bar h-3 rounded-full" style="width: {{ area.percent }}%"></div>
+            </div>
+            <div class="space-y-2">
+                {% for product in area.products %}
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-[#6b7280]">• {{ product.name }}</span>
+                    <span class="font-semibold text-[#1f2937]">{{ "%.2f" | format(product.fte) }} FTEs</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <p class="text-sm text-[#6b7280] mt-6"><strong>Key Insight:</strong> Commercial Finance (30.96%) and Finance Retail Enablement (27.98%) are the top two product areas, representing over 58% of total FTE allocation. This reflects their strategic importance to the organization.</p>
+</div>

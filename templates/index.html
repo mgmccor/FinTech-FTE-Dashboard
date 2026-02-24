@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTech FTE Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --walmart-blue: #0053e2;
+            --walmart-spark: #ffc220;
+            --walmart-gray: #6b7280;
+        }
+        
+        .btn-primary {
+            @apply px-4 py-2 bg-[#0053e2] text-white font-semibold rounded-lg hover:bg-[#003ba3] transition-colors;
+        }
+        
+        .btn-secondary {
+            @apply px-4 py-2 bg-white border-2 border-[#0053e2] text-[#0053e2] font-semibold rounded-lg hover:bg-[#f3f4f6] transition-colors;
+        }
+        
+        .metric-card {
+            @apply bg-white rounded-lg shadow-md p-6 border-l-4 border-[#0053e2];
+        }
+        
+        .tab-active {
+            @apply text-[#0053e2] border-b-2 border-[#0053e2];
+        }
+        
+        .tab-inactive {
+            @apply text-[#6b7280] border-b-2 border-transparent hover:text-[#0053e2];
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #0053e2, #ffc220);
+        }
+        
+        .loading {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="bg-[#f9fafb] text-[#1f2937]">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-[#0053e2] to-[#003ba3] text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold">FinTech FTE Dashboard</h1>
+                    <p class="text-blue-100 mt-2">Product & Initiative Allocations</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg">Period Ending: <span class="font-bold text-[#ffc220]">{{ data.period }}</span></p>
+                    <p class="text-sm text-blue-200">Last Updated: Today</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Key Metrics -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-[#1f2937]">Key Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="metric-card">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">Total Product FTEs</div>
+                    <div class="text-4xl font-bold text-[#0053e2] mt-2">{{ data.total_product_fte }}</div>
+                    <div class="text-xs text-[#9ca3af] mt-2">Across all product areas</div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">Initiative FTEs</div>
+                    <div class="text-4xl font-bold text-[#ffc220] mt-2">{{ data.total_initiative_fte }}</div>
+                    <div class="text-xs text-[#9ca3af] mt-2">Across 150+ initiatives</div>
+                </div>
+                <div class="metric-card border-l-4 border-red-500 bg-red-50">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">⚠️ Discrepancy</div>
+                    <div class="text-4xl font-bold text-red-600 mt-2">{{ data.discrepancy }}</div>
+                    <div class="text-xs text-[#6b7280] mt-2">Product vs Initiative gap</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs Navigation -->
+        <section class="mb-12">
+            <div class="flex gap-8 border-b-2 border-[#e5e7eb] mb-8">
+                <button class="tab-active py-3 font-semibold transition-all"
+                        hx-get="/api/roles"
+                        hx-target="#content"
+                        hx-indicator="#loading">
+                    👥 Roles
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all cursor-pointer"
+                        hx-get="/api/products"
+                        hx-target="#content"
+                        hx-indicator="#loading"
+                        onclick="this.classList.remove('tab-inactive'); this.classList.add('tab-active'); document.querySelectorAll('button').forEach(b => b !== this && (b.classList.remove('tab-active'), b.classList.add('tab-inactive')))">
+                    📊 Products
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all cursor-pointer"
+                        hx-get="/api/initiatives"
+                        hx-target="#content"
+                        hx-indicator="#loading"
+                        onclick="this.classList.remove('tab-inactive'); this.classList.add('tab-active'); document.querySelectorAll('button').forEach(b => b !== this && (b.classList.remove('tab-active'), b.classList.add('tab-inactive')))">
+                    🚀 Initiatives
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="content" hx-trigger="load" hx-get="/api/roles">
+                <!-- Content loads here via HTMX -->
+            </div>
+            <div id="loading" class="htmx-indicator text-center py-4">
+                <span class="text-[#0053e2] font-semibold">Loading...</span>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="mt-12">
+            <h2 class="text-2xl font-bold mb-6 text-[#1f2937]">Visual Analysis</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-[#1f2937]">FTE Distribution by Role</h3>
+                    <div style="height: 300px;">
+                        <canvas id="rolesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-[#1f2937]">FTE Distribution by Product Area</h3>
+                    <div style="height: 300px;">
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Charts
+        const rolesData = {{ data.roles | tojson }};
+        const productsData = {{ data.product_areas | tojson }};
+
+        // Roles Chart
+        const rolesCtx = document.getElementById('rolesChart').getContext('2d');
+        new Chart(rolesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: rolesData.map(r => r.name),
+                datasets: [{
+                    data: rolesData.map(r => r.percent),
+                    backgroundColor: [
+                        '#0053e2',
+                        '#ffc220',
+                        '#0090da',
+                        '#00c7b7',
+                        '#003ba3',
+                        '#ff9500',
+                        '#00b4e5',
+                        '#1e40af',
+                        '#dc2626',
+                        '#059669',
+                        '#7c3aed',
+                        '#ea580c',
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Products Chart
+        const productsCtx = document.getElementById('productsChart').getContext('2d');
+        new Chart(productsCtx, {
+            type: 'bar',
+            data: {
+                labels: productsData.map(p => p.name),
+                datasets: [{
+                    label: 'FTEs',
+                    data: productsData.map(p => p.fte),
+                    backgroundColor: '#0053e2',
+                    borderColor: '#003ba3',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
