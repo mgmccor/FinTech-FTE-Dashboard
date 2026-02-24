@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTech FTE Dashboard - 02/24/26</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --walmart-blue: #0053e2;
+            --walmart-spark: #ffc220;
+        }
+        
+        .btn-primary {
+            @apply px-4 py-2 bg-[#0053e2] text-white font-semibold rounded-lg hover:bg-[#003ba3] transition-colors;
+        }
+        
+        .metric-card {
+            @apply bg-white rounded-lg shadow-md p-6 border-l-4 border-[#0053e2];
+        }
+        
+        .tab-active {
+            @apply text-[#0053e2] border-b-2 border-[#0053e2];
+        }
+        
+        .tab-inactive {
+            @apply text-[#6b7280] border-b-2 border-transparent cursor-pointer hover:text-[#0053e2];
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #0053e2, #ffc220);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .visible {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-[#f9fafb] text-[#1f2937]">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-[#0053e2] to-[#003ba3] text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold">FinTech FTE Dashboard</h1>
+                    <p class="text-blue-100 mt-2">Product & Initiative Allocations</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg">Period Ending: <span class="font-bold text-[#ffc220]">02/24/2026</span></p>
+                    <p class="text-sm text-blue-200" id="updateTime">Last Updated: Today</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Key Metrics -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-[#1f2937]">Key Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="metric-card">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">Total Product FTEs</div>
+                    <div class="text-4xl font-bold text-[#0053e2] mt-2">1,542.49</div>
+                    <div class="text-xs text-[#9ca3af] mt-2">Across all product areas</div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">Initiative FTEs</div>
+                    <div class="text-4xl font-bold text-[#ffc220] mt-2">1,407.00</div>
+                    <div class="text-xs text-[#9ca3af] mt-2">Across 150+ initiatives</div>
+                </div>
+                <div class="metric-card border-l-4 border-red-500 bg-red-50">
+                    <div class="text-sm text-[#6b7280] font-semibold uppercase">⚠️ Discrepancy</div>
+                    <div class="text-4xl font-bold text-red-600 mt-2">135.49</div>
+                    <div class="text-xs text-[#6b7280] mt-2">Product vs Initiative gap</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs Navigation -->
+        <section class="mb-12">
+            <div class="flex gap-8 border-b-2 border-[#e5e7eb] mb-8 flex-wrap">
+                <button class="tab-active py-3 font-semibold transition-all" onclick="switchTab('roles')">
+                    👥 Roles
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all" onclick="switchTab('products')">
+                    📊 Products
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all" onclick="switchTab('initiatives')">
+                    🚀 Initiatives
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all" onclick="switchTab('business-units')">
+                    🏢 Business Units
+                </button>
+            </div>
+
+            <!-- Content Areas -->
+            <div id="roles" class="tab-content visible space-y-6"></div>
+            <div id="products" class="tab-content hidden space-y-6"></div>
+            <div id="initiatives" class="tab-content hidden space-y-6"></div>
+            <div id="business-units" class="tab-content hidden space-y-6"></div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="mt-12">
+            <h2 class="text-2xl font-bold mb-6 text-[#1f2937]">Visual Analysis</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-[#1f2937]">FTE Distribution by Role</h3>
+                    <div style="height: 300px;">
+                        <canvas id="rolesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-[#1f2937]">FTE Distribution by Product Area</h3>
+                    <div style="height: 300px;">
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 border-t border-gray-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-6 text-center text-sm text-[#6b7280]">
+            <p>FinTech FTE Dashboard | Data from Confluence page 3374153877 | Period: 02/24/2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // ===== DATA =====
+        const ROLES = [
+            {"name": "Engineering", "fte": 1094.22, "percent": 70.94},
+            {"name": "Engineering Manager", "fte": 107.76, "percent": 6.99},
+            {"name": "Product Manager", "fte": 107.70, "percent": 6.98},
+            {"name": "Program, Project, Ops", "fte": 66.74, "percent": 4.33},
+            {"name": "Operational Support", "fte": 66.20, "percent": 4.29},
+            {"name": "Data Scientist", "fte": 51.67, "percent": 3.35},
+            {"name": "Sr Dir and Above", "fte": 22.70, "percent": 1.47},
+            {"name": "UX & Research", "fte": 12.00, "percent": 0.78},
+            {"name": "QE", "fte": 7.00, "percent": 0.45},
+            {"name": "Enterprise Architect", "fte": 3.00, "percent": 0.19},
+            {"name": "No Role Assigned", "fte": 2.50, "percent": 0.16},
+            {"name": "Other", "fte": 1.00, "percent": 0.06},
+        ];
+
+        const PRODUCT_AREAS = [
+            {
+                "name": "Commercial Finance",
+                "fte": 477.55,
+                "percent": 30.96,
+                "products": [
+                    {"name": "FDF - Data Foundations", "fte": 69.82},
+                    {"name": "FP&A - Intelligent Business Growth", "fte": 71.51},
+                    {"name": "FDF - Helix", "fte": 49.53},
+                    {"name": "FDF - Foundational Agentic Stream", "fte": 45.61},
+                    {"name": "FP&A - Reporting and Analytics", "fte": 53.72},
+                    {"name": "FDF - Allocation Platform", "fte": 39.19},
+                    {"name": "FDF - Data Governance and Controls", "fte": 27.15},
+                    {"name": "FP&A - Finance Data Hub", "fte": 31.67},
+                    {"name": "FP&A - OneStream", "fte": 21.93},
+                    {"name": "Others", "fte": 69.41},
+                ]
+            },
+            {
+                "name": "Finance Retail Enablement",
+                "fte": 431.59,
+                "percent": 27.98,
+                "products": [
+                    {"name": "Tax - Tax Analytics and Insights", "fte": 51.48},
+                    {"name": "AP - Upstream Data Processing", "fte": 45.40},
+                    {"name": "Exceptions, Disputes, Self Service", "fte": 40.56},
+                    {"name": "Matching & Reconciliation Processes", "fte": 40.79},
+                    {"name": "Tax - Tax Determination", "fte": 40.57},
+                    {"name": "Risk - Casualty Claims", "fte": 27.98},
+                    {"name": "ACCTG - General Ledger", "fte": 30.83},
+                    {"name": "Others", "fte": 154.98},
+                ]
+            },
+            {
+                "name": "SAP Finance",
+                "fte": 274.03,
+                "percent": 17.77,
+                "products": [
+                    {"name": "SAP Accounts Payable", "fte": 45.91},
+                    {"name": "SAP Application Security", "fte": 30.10},
+                    {"name": "SAP Basis", "fte": 27.35},
+                    {"name": "SAP Enterprise Asset Management", "fte": 29.78},
+                    {"name": "SAP Extended Warehouse Management", "fte": 18.09},
+                    {"name": "SAP Accounts Receivable", "fte": 26.81},
+                    {"name": "Others", "fte": 96.99},
+                ]
+            },
+            {
+                "name": "Indirect Procurement",
+                "fte": 214.26,
+                "percent": 13.89,
+                "products": [
+                    {"name": "SAP-GNFR-ECC-S4", "fte": 58.63},
+                    {"name": "MyGNFR Ordering Web / Mobile", "fte": 27.24},
+                    {"name": "MyGNFR Expense", "fte": 20.70},
+                    {"name": "MyGNFR Invoicing (iP2P)", "fte": 19.10},
+                    {"name": "MyGNFR Catalog (iCatalog)", "fte": 14.87},
+                    {"name": "Others", "fte": 73.72},
+                ]
+            },
+            {
+                "name": "Central Item Level Ledger",
+                "fte": 95.71,
+                "percent": 6.20,
+                "products": [
+                    {"name": "FDF - Ledger Service", "fte": 37.82},
+                    {"name": "SAP Master Data Governance Finance", "fte": 17.46},
+                    {"name": "FP&A - SAP Business Intelligence", "fte": 23.87},
+                    {"name": "Location MDM", "fte": 16.56},
+                ]
+            },
+            {
+                "name": "FinTech Admin",
+                "fte": 37.35,
+                "percent": 2.42,
+                "products": [
+                    {"name": "FinTech Administration", "fte": 32.35},
+                    {"name": "FinTech Excellence Analytics", "fte": 5.00},
+                ]
+            },
+            {
+                "name": "FinTech UX",
+                "fte": 12.00,
+                "percent": 0.78,
+                "products": [
+                    {"name": "FinTech UX & Design", "fte": 12.00},
+                ]
+            },
+        ];
+
+        const TOP_INITIATIVES = [
+            {"name": "Deliver MX-CAM Financial Transformation", "fte": 219.27, "percent": 15.58},
+            {"name": "Deliver Continuous Operational Excellence", "fte": 182.74, "percent": 12.99},
+            {"name": "Deliver Cost Optimization Experience", "fte": 125.02, "percent": 8.89},
+            {"name": "Reduce Supplier Friction (Payments & Collections)", "fte": 113.08, "percent": 8.04},
+            {"name": "Improve Budgeting, Forecasting, Analytics", "fte": 112.81, "percent": 8.02},
+            {"name": "Deliver Unified Financial Flow", "fte": 111.98, "percent": 7.96},
+            {"name": "Deliver Tax Transformation & Modernization", "fte": 87.15, "percent": 6.19},
+            {"name": "Deliver Agentic AI Strategy", "fte": 46.86, "percent": 3.33},
+        ];
+
+        const BUSINESS_UNITS = [
+            {"name": "Enterprise Business Services", "fte": 1391.77, "percent": 98.92},
+            {"name": "U.S. Omni Tech", "fte": 5.12, "percent": 0.36},
+            {"name": "Technology Platform", "fte": 3.87, "percent": 0.28},
+            {"name": "International Tech", "fte": 1.99, "percent": 0.14},
+            {"name": "Sams Club Tech", "fte": 1.00, "percent": 0.07},
+            {"name": "Information Security", "fte": 0.25, "percent": 0.02},
+        ];
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('visible');
+            });
+            // Remove active state from all buttons
+            document.querySelectorAll('.tab-inactive, .tab-active').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+            });
+            // Show selected tab
+            document.getElementById(tabName).classList.remove('hidden');
+            document.getElementById(tabName).classList.add('visible');
+            // Set active button
+            event.target.classList.remove('tab-inactive');
+            event.target.classList.add('tab-active');
+            // Populate if needed
+            populateTab(tabName);
+        }
+
+        function populateTab(tabName) {
+            const container = document.getElementById(tabName);
+            if (container.innerHTML.trim()) return; // Already populated
+
+            if (tabName === 'roles') {
+                renderRolesTab();
+            } else if (tabName === 'products') {
+                renderProductsTab();
+            } else if (tabName === 'initiatives') {
+                renderInitiativesTab();
+            } else if (tabName === 'business-units') {
+                renderBusinessUnitsTab();
+            }
+        }
+
+        // ===== RENDER FUNCTIONS =====
+        function renderRolesTab() {
+            const html = `
+                <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Role</h3>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-[#0053e2] text-white">
+                                <th class="px-6 py-3 text-left font-semibold">Role</th>
+                                <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                                <th class="px-6 py-3 text-right font-semibold">Percentage</th>
+                                <th class="px-6 py-3 text-right font-semibold">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${ROLES.map(role => `
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                                    <td class="px-6 py-4 font-medium text-[#1f2937]">${role.name}</td>
+                                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${role.fte.toFixed(2)}</td>
+                                    <td class="px-6 py-4 text-right text-[#6b7280]">${role.percent.toFixed(2)}%</td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="progress-bar h-2 rounded-full" style="width: ${role.percent}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-sm text-[#6b7280] mt-4"><strong>Key Insight:</strong> Engineering dominates the allocation at 70.94%, indicating a strong technical focus across FinTech initiatives.</p>
+            `;
+            document.getElementById('roles').innerHTML = html;
+        }
+
+        function renderProductsTab() {
+            const html = `
+                <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Product Area</h3>
+                <div class="space-y-4">
+                    ${PRODUCT_AREAS.map(area => `
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-[#1f2937]">${area.name}</h4>
+                                    <p class="text-sm text-[#6b7280]">${area.products.length} products</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-[#0053e2]">${area.fte.toFixed(2)}</p>
+                                    <p class="text-sm text-[#6b7280]">${area.percent.toFixed(2)}%</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                <div class="progress-bar h-3 rounded-full" style="width: ${area.percent}%"></div>
+                            </div>
+                            <div class="space-y-2">
+                                ${area.products.map(product => `
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-[#6b7280]">• ${product.name}</span>
+                                        <span class="font-semibold text-[#1f2937]">${product.fte.toFixed(2)} FTEs</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <p class="text-sm text-[#6b7280] mt-6"><strong>Key Insight:</strong> Commercial Finance (30.96%) and Finance Retail Enablement (27.98%) are the top two product areas, representing over 58% of total FTE allocation.</p>
+            `;
+            document.getElementById('products').innerHTML = html;
+        }
+
+        function renderInitiativesTab() {
+            const html = `
+                <h3 class="text-xl font-semibold text-[#1f2937]">Top Initiatives by FTE Allocation</h3>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-[#0053e2] text-white">
+                                <th class="px-6 py-3 text-left font-semibold">Initiative Name</th>
+                                <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                                <th class="px-6 py-3 text-right font-semibold">% of Total</th>
+                                <th class="px-6 py-3 text-right font-semibold">Allocation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${TOP_INITIATIVES.map(init => `
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                                    <td class="px-6 py-4 font-medium text-[#1f2937]">${init.name}</td>
+                                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${init.fte.toFixed(2)}</td>
+                                    <td class="px-6 py-4 text-right text-[#6b7280]">${init.percent.toFixed(2)}%</td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="progress-bar h-2 rounded-full" style="width: ${init.percent}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-sm text-[#6b7280] mt-6"><strong>Executive Insight:</strong> The top 3 initiatives (MX-CAM, COE, and CXE) consume 36.46% of total initiative resources. These represent the highest priority transformation efforts driving organizational value.</p>
+            `;
+            document.getElementById('initiatives').innerHTML = html;
+        }
+
+        function renderBusinessUnitsTab() {
+            const html = `
+                <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Business Unit</h3>
+                <p class="text-sm text-[#6b7280] mb-4">Initiative FTEs allocated across business units (Total: 1,407.00)</p>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-[#0053e2] text-white">
+                                <th class="px-6 py-3 text-left font-semibold">Business Unit</th>
+                                <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                                <th class="px-6 py-3 text-right font-semibold">Percentage</th>
+                                <th class="px-6 py-3 text-right font-semibold">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${BUSINESS_UNITS.map(unit => `
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                                    <td class="px-6 py-4 font-medium text-[#1f2937]">${unit.name}</td>
+                                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${unit.fte.toFixed(2)}</td>
+                                    <td class="px-6 py-4 text-right text-[#6b7280]">${unit.percent.toFixed(2)}%</td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="progress-bar h-2 rounded-full" style="width: ${unit.percent}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-sm text-[#6b7280] mt-6"><strong>Key Insight:</strong> Enterprise Business Services dominates with 98.92% of initiative FTEs (1,391.77), indicating that FinTech initiatives are deeply embedded in enterprise finance operations.</p>
+            `;
+            document.getElementById('business-units').innerHTML = html;
+        }
+
+        // ===== CHARTS =====
+        function initializeCharts() {
+            // Roles Chart
+            const rolesCtx = document.getElementById('rolesChart');
+            if (rolesCtx) {
+                new Chart(rolesCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ROLES.map(r => r.name),
+                        datasets: [{
+                            data: ROLES.map(r => r.percent),
+                            backgroundColor: [
+                                '#0053e2',
+                                '#ffc220',
+                                '#0090da',
+                                '#00c7b7',
+                                '#003ba3',
+                                '#ff9500',
+                                '#00b4e5',
+                                '#1e40af',
+                                '#dc2626',
+                                '#059669',
+                                '#7c3aed',
+                                '#ea580c',
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Products Chart
+            const productsCtx = document.getElementById('productsChart');
+            if (productsCtx) {
+                new Chart(productsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: PRODUCT_AREAS.map(p => p.name),
+                        datasets: [{
+                            label: 'FTEs',
+                            data: PRODUCT_AREAS.map(p => p.fte),
+                            backgroundColor: '#0053e2',
+                            borderColor: '#003ba3',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRolesTab();
+            initializeCharts();
+            document.getElementById('updateTime').textContent = 'Last Updated: ' + new Date().toLocaleDateString();
+        });
+    </script>
+</body>
+</html>
