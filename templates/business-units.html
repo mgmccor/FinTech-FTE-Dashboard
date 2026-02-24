@@ -1,0 +1,31 @@
+<div class="space-y-6">
+    <h3 class="text-xl font-semibold text-[#1f2937]">FTE Distribution by Business Unit</h3>
+    <p class="text-sm text-[#6b7280] mb-4">Initiative FTEs allocated across business units (Total: 1,407.00)</p>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-[#0053e2] text-white">
+                    <th class="px-6 py-3 text-left font-semibold">Business Unit</th>
+                    <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                    <th class="px-6 py-3 text-right font-semibold">Percentage</th>
+                    <th class="px-6 py-3 text-right font-semibold">Distribution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unit in business_units %}
+                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                    <td class="px-6 py-4 font-medium text-[#1f2937]">{{ unit.name }}</td>
+                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(unit.fte) }}</td>
+                    <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(unit.percent) }}%</td>
+                    <td class="px-6 py-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: {{ unit.percent }}%"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="text-sm text-[#6b7280] mt-6"><strong>Key Insight:</strong> Enterprise Business Services dominates with 98.92% of initiative FTEs (1,391.77), indicating that FinTech initiatives are deeply embedded in enterprise finance operations and transformations.</p>
+</div>

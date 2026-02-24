@@ -86,7 +86,7 @@
 
         <!-- Tabs Navigation -->
         <section class="mb-12">
-            <div class="flex gap-8 border-b-2 border-[#e5e7eb] mb-8">
+            <div class="flex gap-8 border-b-2 border-[#e5e7eb] mb-8 flex-wrap">
                 <button class="tab-active py-3 font-semibold transition-all"
                         hx-get="/api/roles"
                         hx-target="#content"
@@ -97,15 +97,22 @@
                         hx-get="/api/products"
                         hx-target="#content"
                         hx-indicator="#loading"
-                        onclick="this.classList.remove('tab-inactive'); this.classList.add('tab-active'); document.querySelectorAll('button').forEach(b => b !== this && (b.classList.remove('tab-active'), b.classList.add('tab-inactive')))">
+                        onclick="switchTab(this)">
                     📊 Products
                 </button>
                 <button class="tab-inactive py-3 font-semibold transition-all cursor-pointer"
                         hx-get="/api/initiatives"
                         hx-target="#content"
                         hx-indicator="#loading"
-                        onclick="this.classList.remove('tab-inactive'); this.classList.add('tab-active'); document.querySelectorAll('button').forEach(b => b !== this && (b.classList.remove('tab-active'), b.classList.add('tab-inactive')))">
+                        onclick="switchTab(this)">
                     🚀 Initiatives
+                </button>
+                <button class="tab-inactive py-3 font-semibold transition-all cursor-pointer"
+                        hx-get="/api/business-units"
+                        hx-target="#content"
+                        hx-indicator="#loading"
+                        onclick="switchTab(this)">
+                    🏢 Business Units
                 </button>
             </div>
 
@@ -139,6 +146,16 @@
     </main>
 
     <script>
+        // Helper function to switch tabs
+        function switchTab(button) {
+            document.querySelectorAll('button').forEach(b => {
+                b.classList.remove('tab-active');
+                b.classList.add('tab-inactive');
+            });
+            button.classList.remove('tab-inactive');
+            button.classList.add('tab-active');
+        }
+
         // Charts
         const rolesData = {{ data.roles | tojson }};
         const productsData = {{ data.product_areas | tojson }};
@@ -214,6 +231,7 @@
                 }
             }
         });
+    </script>
     </script>
 </body>
 </html>
