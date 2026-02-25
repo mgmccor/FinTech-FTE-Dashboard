@@ -1,6 +1,8 @@
 <div class="space-y-6">
     <h3 class="text-xl font-semibold text-[#1f2937]">All 154 Initiatives by FTE Allocation</h3>
-    <p class="text-sm text-[#6b7280] mb-4">💡 Items with descriptions are highlighted. Total: {{ initiatives | length }} initiatives</p>
+    {% set with_desc = initiatives | selectattr('description') | list %}
+    {% set without_desc = initiatives | rejectattr('description') | list %}
+    <p class="text-sm text-[#6b7280] mb-4">💡 {{ with_desc | length }} major initiatives with full descriptions | {{ without_desc | length }} supporting initiatives</p>
     <div class="bg-white rounded-lg shadow-md overflow-y-auto" style="max-height: 800px;">
         <table class="w-full">
             <thead>
@@ -12,18 +14,38 @@
                 </tr>
             </thead>
             <tbody>
-                {% for initiative in initiatives %}
-                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative {% if initiative.description %}bg-yellow-50{% endif %}">
-                    <td class="px-6 py-4 font-medium text-[#1f2937] {% if initiative.description %}cursor-help{% endif %}" data-id="{{ initiative.id }}">
+                <!-- MAJOR INITIATIVES WITH DESCRIPTIONS -->
+                {% for initiative in with_desc %}
+                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative bg-yellow-50">
+                    <td class="px-6 py-4 font-medium text-[#1f2937] cursor-help" data-id="{{ initiative.id }}">
                         {{ initiative.name }}
-                        {% if initiative.description %}
                         <!-- Tooltip -->
                         <div class="hidden group-hover:block absolute left-0 right-0 top-full bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 w-96 text-xs mt-2 pointer-events-none" style="white-space: normal; line-height: 1.4;">
                             <p class="font-semibold mb-2 text-[#ffc220]">{{ initiative.name }}</p>
                             <p class="text-gray-200">{{ initiative.description }}</p>
                         </div>
-                        {% endif %}
                     </td>
+                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(initiative.fte) }}</td>
+                    <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(initiative.percent) }}%</td>
+                    <td class="px-6 py-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="progress-bar h-2 rounded-full" style="width: {{ initiative.percent }}%"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                
+                <!-- SECTION DIVIDER -->
+                <tr class="bg-gradient-to-r from-[#e5e7eb] to-[#e5e7eb]">
+                    <td colspan="4" class="px-6 py-3">
+                        <span class="text-sm font-semibold text-[#6b7280]">📋 Supporting Initiatives (No Description)</span>
+                    </td>
+                </tr>
+                
+                <!-- SUPPORTING INITIATIVES WITHOUT DESCRIPTIONS -->
+                {% for initiative in without_desc %}
+                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                    <td class="px-6 py-4 font-medium text-[#6b7280]">{{ initiative.name }}</td>
                     <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(initiative.fte) }}</td>
                     <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(initiative.percent) }}%</td>
                     <td class="px-6 py-4">
@@ -36,5 +58,5 @@
             </tbody>
         </table>
     </div>
-    <p class="text-sm text-[#6b7280] mt-6"><strong>Note:</strong> Items with yellow background have detailed descriptions from the FY27 TR Initiative Descriptions spreadsheet. Hover over those names to view full descriptions. The top 3 initiatives (MX-CAM, COE, and Cost Optimization) consume 36.46% of total initiative resources.</p>
+    <p class="text-sm text-[#6b7280] mt-6"><strong>Legend:</strong> Yellow background = Major initiatives with full descriptions (hover to read). Standard white = Supporting initiatives without detailed descriptions. The top 3 initiatives (MX-CAM, COE, and Cost Optimization) consume 36.46% of total initiative resources.</p>
 </div>

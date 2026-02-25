@@ -506,9 +506,12 @@
         }
 
         function renderInitiativesTab() {
+            const withDescriptions = TOP_INITIATIVES.filter(init => init.description);
+            const withoutDescriptions = TOP_INITIATIVES.filter(init => !init.description);
+            
             const html = `
                 <h3 class="text-xl font-semibold text-[#1f2937]">All 154 Initiatives by FTE Allocation</h3>
-                <p class="text-sm text-[#6b7280] mb-4">💡 Items with yellow highlight have detailed descriptions - hover to read them. Total: ${TOP_INITIATIVES.length} initiatives</p>
+                <p class="text-sm text-[#6b7280] mb-4">💡 ${withDescriptions.length} major initiatives with full descriptions | ${withoutDescriptions.length} supporting initiatives</p>
                 <div class="bg-white rounded-lg shadow-md overflow-y-auto" style="max-height: 800px;">
                     <table class="w-full">
                         <thead>
@@ -520,15 +523,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${TOP_INITIATIVES.map(init => `
-                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative ${init.description ? 'bg-yellow-50' : ''}">
-                                    <td class="px-6 py-4 font-medium text-[#1f2937] ${init.description ? 'cursor-help' : ''}" data-id="${init.id}">
+                            <!-- MAJOR INITIATIVES WITH DESCRIPTIONS -->
+                            ${withDescriptions.map(init => `
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative bg-yellow-50">
+                                    <td class="px-6 py-4 font-medium text-[#1f2937] cursor-help" data-id="${init.id}">
                                         ${init.name}
-                                        ${init.description ? `<div class="hidden group-hover:block absolute left-0 right-0 top-full bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 w-96 text-xs mt-2 pointer-events-none" style="white-space: normal; line-height: 1.4;">
+                                        <div class="hidden group-hover:block absolute left-0 right-0 top-full bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 w-96 text-xs mt-2 pointer-events-none" style="white-space: normal; line-height: 1.4;">
                                             <p class="font-semibold mb-2 text-[#ffc220]">${init.name}</p>
                                             <p class="text-gray-200">${init.description}</p>
-                                        </div>` : ''}
+                                        </div>
                                     </td>
+                                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${init.fte.toFixed(2)}</td>
+                                    <td class="px-6 py-4 text-right text-[#6b7280]">${init.percent.toFixed(2)}%</td>
+                                    <td class="px-6 py-4">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="progress-bar h-2 rounded-full" style="width: ${init.percent}%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                            
+                            <!-- SECTION DIVIDER -->
+                            <tr class="bg-gradient-to-r from-[#e5e7eb] to-[#e5e7eb]">
+                                <td colspan="4" class="px-6 py-3">
+                                    <span class="text-sm font-semibold text-[#6b7280]">📋 Supporting Initiatives (No Description)</span>
+                                </td>
+                            </tr>
+                            
+                            <!-- SUPPORTING INITIATIVES WITHOUT DESCRIPTIONS -->
+                            ${withoutDescriptions.map(init => `
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                                    <td class="px-6 py-4 font-medium text-[#6b7280]">${init.name}</td>
                                     <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${init.fte.toFixed(2)}</td>
                                     <td class="px-6 py-4 text-right text-[#6b7280]">${init.percent.toFixed(2)}%</td>
                                     <td class="px-6 py-4">
@@ -541,7 +566,7 @@
                         </tbody>
                     </table>
                 </div>
-                <p class="text-sm text-[#6b7280] mt-6"><strong>Note:</strong> Items with yellow background have detailed descriptions from the FY27 TR Initiative Descriptions spreadsheet. Hover over those names to view full descriptions. The top 3 initiatives (MX-CAM, COE, and Cost Optimization) consume 36.46% of total initiative resources.</p>
+                <p class="text-sm text-[#6b7280] mt-6"><strong>Legend:</strong> Yellow background = Major initiatives with full descriptions (hover to read). Standard white = Supporting initiatives without detailed descriptions. The top 3 initiatives (MX-CAM, COE, and Cost Optimization) consume 36.46% of total initiative resources.</p>
             `;
             document.getElementById('initiatives').innerHTML = html;
         }
