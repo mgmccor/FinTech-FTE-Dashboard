@@ -35,28 +35,49 @@
                 </tr>
                 {% endfor %}
                 
-                <!-- SECTION DIVIDER -->
-                <tr class="bg-gradient-to-r from-[#e5e7eb] to-[#e5e7eb]">
-                    <td colspan="4" class="px-6 py-3">
-                        <span class="text-sm font-semibold text-[#6b7280]">📋 Supporting Initiatives (No Description)</span>
+                <!-- SUPPORTING INITIATIVES HEADER (COLLAPSIBLE) -->
+                {% set supporting_fte_total = without_desc | map(attribute='fte') | sum %}
+                {% set supporting_percent_total = without_desc | map(attribute='percent') | sum %}
+                <tr class="bg-gradient-to-r from-[#e5e7eb] to-[#e5e7eb] cursor-pointer hover:from-[#d1d5db] hover:to-[#d1d5db] transition-colors" onclick="toggleSupportingInitiatives()">
+                    <td class="px-6 py-3">
+                        <span class="text-sm font-semibold text-[#6b7280]"><span id="supportingToggle">▼</span> 📋 Supporting Initiatives ({{ without_desc | length }})</span>
                     </td>
+                    <td class="px-6 py-3 text-right font-semibold text-[#0053e2]">{{ "%.2f" | format(supporting_fte_total) }}</td>
+                    <td class="px-6 py-3 text-right font-semibold text-[#6b7280]">{{ "%.2f" | format(supporting_percent_total) }}%</td>
+                    <td></td>
                 </tr>
                 
-                <!-- SUPPORTING INITIATIVES WITHOUT DESCRIPTIONS -->
-                {% for initiative in without_desc %}
-                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
-                    <td class="px-6 py-4 font-medium text-[#6b7280]">{{ initiative.name }}</td>
-                    <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(initiative.fte) }}</td>
-                    <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(initiative.percent) }}%</td>
-                    <td class="px-6 py-4">
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="progress-bar h-2 rounded-full" style="width: {{ initiative.percent }}%"></div>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
+                <!-- SUPPORTING INITIATIVES WITHOUT DESCRIPTIONS (COLLAPSIBLE) -->
+                <tbody id="supportingInitiativesBody">
+                    {% for initiative in without_desc %}
+                    <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
+                        <td class="px-6 py-4 font-medium text-[#6b7280]">{{ initiative.name }}</td>
+                        <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(initiative.fte) }}</td>
+                        <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(initiative.percent) }}%</td>
+                        <td class="px-6 py-4">
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar h-2 rounded-full" style="width: {{ initiative.percent }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </tbody>
         </table>
     </div>
     <p class="text-sm text-[#6b7280] mt-6"><strong>Legend:</strong> Yellow background = Major initiatives with full descriptions (hover to read). Standard white = Supporting initiatives without detailed descriptions. The top 3 initiatives (MX-CAM, COE, and Cost Optimization) consume 36.46% of total initiative resources.</p>
 </div>
+
+<script>
+function toggleSupportingInitiatives() {
+    const body = document.getElementById('supportingInitiativesBody');
+    const toggle = document.getElementById('supportingToggle');
+    if (body.style.display === 'none') {
+        body.style.display = '';
+        toggle.textContent = '▼';
+    } else {
+        body.style.display = 'none';
+        toggle.textContent = '▶';
+    }
+}
+</script>
