@@ -1,19 +1,27 @@
 <div class="space-y-6">
     <h3 class="text-xl font-semibold text-[#1f2937]">Top Initiatives by FTE Allocation</h3>
+    <p class="text-sm text-[#6b7280] mb-4">💡 Hover over initiative names to see full descriptions</p>
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <table class="w-full">
             <thead>
                 <tr class="bg-[#0053e2] text-white">
                     <th class="px-6 py-3 text-left font-semibold">Initiative Name</th>
-                    <th class="px-6 py-3 text-right font-semibold">FTEs</th>
+                    <th class="px-6 py-right font-semibold">FTEs</th>
                     <th class="px-6 py-3 text-right font-semibold">% of Total</th>
                     <th class="px-6 py-3 text-right font-semibold">Allocation</th>
                 </tr>
             </thead>
             <tbody>
                 {% for initiative in initiatives %}
-                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
-                    <td class="px-6 py-4 font-medium text-[#1f2937]">{{ initiative.name }}</td>
+                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative">
+                    <td class="px-6 py-4 font-medium text-[#1f2937] cursor-help" data-id="{{ initiative.id }}" title="Click to see description">
+                        {{ initiative.name }}
+                        <!-- Tooltip -->
+                        <div class="hidden group-hover:block absolute left-0 right-0 top-full bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 w-96 text-sm mt-2 pointer-events-none">
+                            <p class="font-semibold mb-2 text-[#ffc220]">{{ initiative.name }}</p>
+                            <p class="text-gray-200 text-xs leading-relaxed">{{ initiative.description }}</p>
+                        </div>
+                    </td>
                     <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">{{ "%.2f" | format(initiative.fte) }}</td>
                     <td class="px-6 py-4 text-right text-[#6b7280]">{{ "%.2f" | format(initiative.percent) }}%</td>
                     <td class="px-6 py-4">
@@ -26,5 +34,5 @@
             </tbody>
         </table>
     </div>
-    <p class="text-sm text-[#6b7280] mt-6"><strong>Executive Insight:</strong> The top 3 initiatives (MX-CAM, COE, and CXE) consume 36.46% of total initiative resources. These represent the highest priority transformation efforts driving organizational value.</p>
+    <p class="text-sm text-[#6b7280] mt-6"><strong>Executive Insight:</strong> The top 3 initiatives (MX-CAM, COE, and CXE) consume 36.46% of total initiative resources. These represent the highest priority transformation efforts driving organizational value. Each initiative includes detailed descriptions covering scope, deliverables, and business benefits.</p>
 </div>

@@ -241,14 +241,14 @@
         ];
 
         const TOP_INITIATIVES = [
-            {"name": "Deliver MX-CAM Financial Transformation", "fte": 219.27, "percent": 15.58},
-            {"name": "Deliver Continuous Operational Excellence", "fte": 182.74, "percent": 12.99},
-            {"name": "Deliver Cost Optimization Experience", "fte": 125.02, "percent": 8.89},
-            {"name": "Reduce Supplier Friction (Payments & Collections)", "fte": 113.08, "percent": 8.04},
-            {"name": "Improve Budgeting, Forecasting, Analytics", "fte": 112.81, "percent": 8.02},
-            {"name": "Deliver Unified Financial Flow", "fte": 111.98, "percent": 7.96},
-            {"name": "Deliver Tax Transformation & Modernization", "fte": 87.15, "percent": 6.19},
-            {"name": "Deliver Agentic AI Strategy", "fte": 46.86, "percent": 3.33},
+            {"id": "fintech-003", "name": "FINTECH: Deliver MX-CAM Financial Transformation", "fte": 219.27, "percent": 15.58, "description": "Modernize Mexico and Central America finance platforms and processes to create a simpler, finance grade backbone that scales. This includes the Finance 2.0 program elements like S4 enablement, common e invoicing capabilities, master data readiness, and the integrations required to eliminate brittle middleware dependencies. It also supports regional adoption of global tools such as MyGNFR and standard invoicing, enabling more consistent controls and reporting across MX and CAM. Benefits: faster and more reliable close and reporting, reduced integration and operational risk, and a foundation that supports market growth with fewer one off fixes."},
+            {"id": "fintech-012", "name": "FINTECH: Deliver Continuous Operational Excellence", "fte": 182.74, "percent": 12.99, "description": "Deliver continuous operational excellence across the finance product portfolio through disciplined sustainment and reliability practices. Covers tech debt and vulnerability remediation, end to end test support, smaller enhancements, incident triage and resolution, and ongoing platform hygiene such as certificate updates and access renewals. This ensures critical finance capabilities remain stable and performant while major transformations are underway. Benefits: fewer production issues, faster recovery when incidents occur, reduced compliance risk, and more predictable delivery for business partners."},
+            {"id": "fintech-002", "name": "FINTECH: Deliver Cost Optimization Experience", "fte": 125.02, "percent": 8.89, "description": "Deliver a unified cost optimization experience for associates and business partners by standardizing indirect procurement and expense workflows on common platforms. Includes launching GENIE and IDEA to automate support and contract intelligence, expanding MyGNFR, Catalog, and Concur, and improving ApprovalHub and GNFR data products for better visibility and governance. Also covers targeted process and platform improvements that close financial integrity gaps across real estate and ERP related procurement flows. Benefits: lower cost to serve through automation, clearer spend and contract insights for better savings decisions, and a smoother associate experience from request to payment."},
+            {"id": "fintech-001", "name": "FINTECH: Reduce Supplier Friction (payments & collections)", "fte": 113.08, "percent": 8.04, "description": "Reduce supplier friction across the end to end invoice to pay and bill to cash lifecycle for GFR and GNFR. This work strengthens supplier payment accuracy and transparency, modernizes disputes and collections, and improves upstream imports and matching signals so issues are prevented not worked downstream. Includes supplier self service and explainability experiences, payables and receivables workflow automation, and post payment audit integration to accelerate recoveries. Benefits: fewer exceptions and inquiries, faster on time payments and collections, lower manual effort, and improved supplier and merchant trust."},
+            {"id": "fintech-008", "name": "FINTECH: Improve Budgeting, Forecasting, and Analytic Capabilities", "fte": 112.81, "percent": 8.02, "description": "Improve budgeting, forecasting, and analytics by connecting forecasting and planning platforms to the signals that drive business performance. This includes scaling Forecast Intelligence (F1), progressing the future of OneStream and planning migrations, expanding Walmart Machine Learning for forecasting baselines, and strengthening BI reporting and total cost of ownership insights. The focus is on better scenario and driver modeling, clearer governance, and more automation so teams spend less time reconciling and more time acting. Benefits: higher forecast accuracy, faster planning cycles, better capital and spend decisions, and reduced manual effort across finance and business teams."},
+            {"id": "fintech-006", "name": "FINTECH: Deliver Unified Financial Flow", "fte": 111.98, "percent": 7.96, "description": "Deliver a unified financial flow that moves the enterprise toward a single, trusted source of finance grade data at the right grain and frequency. Includes MetaHub for master data governance, Helix plus DoP standards for compliant data logistics, and unified accounting and reconciliation services that reduce parallel pipelines and manual matching. The program also advances Digital Accountant capabilities to automate validation and close activities across finance operations. Benefits: higher data trust and faster decision making, increased auto reconciliation, fewer manual adjustments, and a faster, more reliable close."},
+            {"id": "fintech-005", "name": "FINTECH: Deliver Tax Transformation and Modernization", "fte": 87.15, "percent": 6.19, "description": "Modernize enterprise tax capabilities across management, exemption, determination, compliance, and analytics to keep pace with omni channel growth and changing regulations. Includes advancing Tax Mod and related item categorization and determination services, expanding Omni Tax Exemption capabilities, and improving audit and compliance tooling and reporting. Also covers foundational upgrades such as Vertex modernization and targeted regulatory readiness work across markets. Benefits: more accurate and consistent tax outcomes, lower audit and compliance risk, reduced manual touch points for tax ops, and better customer and associate experiences at checkout and onboarding."},
+            {"id": "fintech-010", "name": "FINTECH: Deliver Agentic AI Strategy", "fte": 46.86, "percent": 3.33, "description": "Deliver a unified agentic AI strategy for finance that makes agents discoverable, governable, and reusable across the portfolio. Includes an open agent and tool registry, semantic routing aligned to finance user personas and access controls, and a standardized evaluation framework to monitor quality and performance. This work enables knowledge agents and process agents to be deployed safely inside existing workflows while improving consistency and auditability. Benefits: faster delivery of AI powered experiences, reduced duplicated builds across teams, stronger controls, and measurable productivity gains for associates."},
         ];
 
         const BUSINESS_UNITS = [
@@ -370,7 +370,8 @@
         function renderInitiativesTab() {
             const html = `
                 <h3 class="text-xl font-semibold text-[#1f2937]">Top Initiatives by FTE Allocation</h3>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <p class="text-sm text-[#6b7280] mb-4">💡 Hover over initiative names to see full descriptions</p>
+                <div class="bg-white rounded-lg shadow-md overflow-visible">
                     <table class="w-full">
                         <thead>
                             <tr class="bg-[#0053e2] text-white">
@@ -382,8 +383,14 @@
                         </thead>
                         <tbody>
                             ${TOP_INITIATIVES.map(init => `
-                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors">
-                                    <td class="px-6 py-4 font-medium text-[#1f2937]">${init.name}</td>
+                                <tr class="border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors group relative">
+                                    <td class="px-6 py-4 font-medium text-[#1f2937] cursor-help relative" data-id="${init.id}">
+                                        ${init.name}
+                                        <div class="hidden group-hover:block absolute left-0 top-full bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 w-96 text-xs mt-2 pointer-events-none" style="white-space: normal; line-height: 1.5;">
+                                            <p class="font-semibold mb-2 text-[#ffc220]">${init.name}</p>
+                                            <p class="text-gray-200">${init.description}</p>
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 text-right text-[#0053e2] font-semibold">${init.fte.toFixed(2)}</td>
                                     <td class="px-6 py-4 text-right text-[#6b7280]">${init.percent.toFixed(2)}%</td>
                                     <td class="px-6 py-4">
@@ -396,7 +403,7 @@
                         </tbody>
                     </table>
                 </div>
-                <p class="text-sm text-[#6b7280] mt-6"><strong>Executive Insight:</strong> The top 3 initiatives (MX-CAM, COE, and CXE) consume 36.46% of total initiative resources. These represent the highest priority transformation efforts driving organizational value.</p>
+                <p class="text-sm text-[#6b7280] mt-6"><strong>Executive Insight:</strong> The top 3 initiatives (MX-CAM, COE, and CXE) consume 36.46% of total initiative resources. These represent the highest priority transformation efforts driving organizational value. Each initiative includes detailed descriptions covering scope, deliverables, and business benefits.</p>
             `;
             document.getElementById('initiatives').innerHTML = html;
         }
